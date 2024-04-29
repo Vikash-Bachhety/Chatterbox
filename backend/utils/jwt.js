@@ -7,7 +7,7 @@ const createToken = async (userId) => {
     
     // Generate JWT token with user ID and expiration time
     const token =  jwt.sign({ userId }, secretKey, {
-      expiresIn: "1d",
+      expiresIn: "30m",
     });
 
     // Return the generated token

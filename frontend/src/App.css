@@ -1,0 +1,16 @@
+#aside::-webkit-scrollbar,
+#main::-webkit-scrollbar {
+  width: 2px; /* Width of the scrollbar */
+}
+
+#aside::-webkit-scrollbar-thumb,
+#main::-webkit-scrollbar-thumb {
+  background-color: #27a9ff; /* Color of the thumb */
+  border-radius: 5px; /* Rounded corners of the thumb */
+}
+
+#aside::-webkit-scrollbar-track,
+#main::-webkit-scrollbar-track {
+  background-color: #000; /* Color of the track */
+}
+
