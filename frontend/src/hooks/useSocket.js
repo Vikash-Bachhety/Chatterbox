@@ -6,7 +6,7 @@ const useSocket = () => {
 
   useEffect(() => {
     // Initialize Socket.IO connection
-    const newSocket = io("http://localhost:3000");
+    const newSocket = io("chatterbox-production.up.railway.app" || "http://localhost:3000");
 
     // Save the socket instance to state
     setSocket(newSocket);

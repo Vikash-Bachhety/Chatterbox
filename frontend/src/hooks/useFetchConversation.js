@@ -15,6 +15,7 @@ const useFetchConversation = () => {
       };
 
       const response = await axios.get(
+        `chatterbox-production.up.railway.app/api/message/${selectedUserId}` || 
         `http://localhost:3000/api/message/${selectedUserId}`,
         { headers }
       );
