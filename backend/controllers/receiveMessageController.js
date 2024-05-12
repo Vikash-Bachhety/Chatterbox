@@ -4,7 +4,7 @@ export const receiveMessageController = async (req, res) => {
   const userId = req.userId;
   const { id: partnerId } = req.params;
 
-  console.log(userId, partnerId);
+  // console.log(userId, partnerId);
 
   try {
     // Find conversation where both userId and partnerId are participants
@@ -12,7 +12,7 @@ export const receiveMessageController = async (req, res) => {
       participants: { $all: [userId, partnerId] },
     }).populate("messages");
 
-    console.log(conversation);
+    // console.log(conversation);
 
     if (conversation) {
       // If conversation is found, send back the messages

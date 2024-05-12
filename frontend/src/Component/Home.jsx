@@ -9,26 +9,29 @@ import useSendMessage from "../hooks/useSendMessage.js";
 import useFetchConversation from "../hooks/useFetchConversation";
 import useScrollToBottom from "../hooks/useScrollToBottom.js";
 import useSetUserIdFromToken from "../hooks/useSetUserIdFromToken.js";
+import useOnlineStatus from "../hooks/useOnlineStatus.js";
 import useLogout from "../hooks/useLogout.js";
+import useSocket from "../hooks/useSocket.js";
 import chat from "../assets/chat.png";
 import hello from "../assets/hiii.png";
 import online from "../assets/online.png";
 import offline from "../assets/offline.png";
 import twitty from "../assets/twitty.png";
-import moment from 'moment';
+import moment from "moment";
 
 function Home() {
   const [selectedUserId, setSelectedUserId] = useState(null);
   // const [conversation, setConversation] = useState([]);
   const [recipient, setRecipient] = useState({ fullname: "", profilepic: "" });
   const { message, setMessage, sendMessage } = useSendMessage();
-  const contacts = useFetchContacts();
+  const { contacts, search, setSearch } = useFetchContacts();
   const { conversation, setConversation, fetchConversation } =
     useFetchConversation();
   const chatContainerRef = useScrollToBottom(conversation);
   const userId = useSetUserIdFromToken();
   const navigate = useNavigate();
   const logout = useLogout();
+  const socket = useSocket(); // Initialize Socket.IO connection
 
   useEffect(() => {
     if (!userId) navigate("/Login");
@@ -53,15 +56,52 @@ function Home() {
     logout();
   };
 
+  const status = useOnlineStatus();
+
+  // Add event listeners for socket events
+  useEffect(() => {
+    if (socket) {
+      socket.on("connect", () => {
+        console.log("Connected to server");
+      });
+
+      socket.on("disconnect", () => {
+        console.log("Disconnected from server");
+      });
+
+      socket.on("message", (message) => {
+        console.log("Received message:", message);
+        // Handle received message
+      });
+
+      // Clean up function to remove event listeners when component unmounts
+      return () => {
+        socket.off("connect");
+        socket.off("disconnect");
+        socket.off("message");
+      };
+    }
+  }, [socket]);
+
   return (
     <div className="flex h-screen bg-gray-50 dark:bg-gray-900">
       {/* Sidebar */}
       <aside className="flex flex-col w-1/4 bg-gray-800 text-white">
         <header className="flex items-center justify-center bg-slate-950 p-3">
-          <h1 className="hidden md:block text-white font-serif font-extrabold text-xl rounded-lg px-4 py-2 text-center w-11/12">
+          {/* <h1 className="hidden md:block text-white font-serif font-extrabold text-xl rounded-lg px-4 py-2 text-center w-11/12">
             Welcome to Chatterbox`
-          </h1>
-          <img className="block md:hidden h-14 w-14" src={twitty} alt="" />
+          </h1> */}
+          <input
+            type="search"
+            value={search}
+            onChange={(e) => {
+              setSearch(e.target.value);
+            }}
+            className="w-11/12 py-2 px-4 rounded-lg border border-gray-300 bg-gray-100 dark:bg-gray-800 dark:border-gray-600 text-gray-800 dark:text-gray-200 focus:outline-none focus:border-blue-500"
+            placeholder="search contact here "
+          />
+          {/* {status ? "🟢" : "🔴"}
+          <img className="block md:hidden h-14 w-14" src={twitty} alt="" /> */}
 
           {/* <input
             type="search"
@@ -75,6 +115,11 @@ function Home() {
         <main id="aside" className="flex-1 bg-gray-950 overflow-y-auto p-2">
           <ul className="divide-y divide-gray-800">
             {contacts
+              .filter((user) => {
+                return search.toLowerCase() === ""
+                  ? user
+                  : user.fullName.toLowerCase().includes(search);
+              })
               .filter((contact) => userId !== contact._id)
               .map((contact) => (
                 <li
@@ -83,7 +128,7 @@ function Home() {
                     handleContactClick(
                       contact._id,
                       contact.fullName,
-                      contact.profilePic,
+                      contact.profilePic
                     )
                   }
                   className="p-4 cursor-pointer hover:bg-blue-200 hover:bg-opacity-10 hover:rounded-sm transition-colors duration-200"
@@ -101,7 +146,7 @@ function Home() {
                         {contact.fullName}
                       </p>
                       <p className="hidden lg:block absolute top-0 right-1 text-[8px] xl:text-[10px] font-medium tracking-wider text-gray-400">
-                        {moment(contact.updatedAt).format('DD-MM-YY')}
+                        {moment(contact.updatedAt).format("DD-MM-YY")}
                       </p>
                     </div>
                   </div>
@@ -111,7 +156,10 @@ function Home() {
         </main>
         <footer className="bg-slate-950 p-3 flex lg:justify-between justify-center">
           <img className="hidden lg:block h-10 w-10" src={twitty} alt="" />
-          <TbLogout className="cursor-pointer h-8 w-8 hover:scale-110" onClick={handleLogout} />
+          <TbLogout
+            className="cursor-pointer h-8 w-8 hover:scale-110"
+            onClick={handleLogout}
+          />
         </footer>
       </aside>
       {/* Main Content */}
@@ -120,7 +168,7 @@ function Home() {
           <>
             <div className="p-3 h-16 bg-slate-900 flex items-center gap-4">
               <IoMdArrowRoundBack
-                className="h-8 w-8 invert"
+                className="h-6 w-8 invert cursor-pointer"
                 onClick={backClick}
               />
               <img
@@ -131,7 +179,6 @@ function Home() {
               <h1 className="text-white font-semibold text-xl">
                 {recipient.fullname}
               </h1>
-              <img src={online} className="w-5 h-5 absolute right-5" />
             </div>
             <div
               ref={chatContainerRef}
@@ -146,7 +193,8 @@ function Home() {
                         <p className="relative text-black text-center min-w-24 max-w-md inline-block bg-teal-100 font-medium p-2 border rounded-lg break-words w-auto">
                           {chat.message}
                           <span className="absolute text-[10px] text-gray-500 font-semibold right-0 -bottom-6">
-                            {chat.createdAt && moment(chat.createdAt).format('DD-MM-YY, h:mm a')}
+                            {chat.createdAt &&
+                              moment(chat.createdAt).format("DD-MM-YY, h:mm a")}
                           </span>
                         </p>
                       )}
@@ -187,8 +235,11 @@ function Home() {
           </>
         ) : (
           <div className="h-3/4 bg-bg flex flex-col items-center mt-56">
-            <img src={offline} className="w-5 h-5 absolute top-6 right-5" />
-            <img className="h-28 w-28 hover:translate-x-3 hover:scale-110" src={chat} alt="" />
+            <img
+              className="h-28 w-28 hover:translate-x-3 hover:scale-110"
+              src={chat}
+              alt=""
+            />
             <h1 className="font-extrabold text-4xl text-gray-700 hover:text-gray-600 font-sans">
               Let's start Conversation
             </h1>

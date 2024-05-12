@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 
 const useFetchContacts = () => {
   const [contacts, setContacts] = useState([]);
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
     const fetchContacts = async () => {
@@ -20,7 +21,7 @@ const useFetchContacts = () => {
     fetchContacts();
   }, []);
 
-  return contacts;
+  return { contacts, search, setSearch };
 };
 
 export default useFetchContacts;
