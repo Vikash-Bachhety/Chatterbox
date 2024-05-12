@@ -11,7 +11,7 @@ dotenv.config();
 
 const PORT = process.env.PORT || 3000;
 
-app.use(cors({ origin: ["https://chatterbox-app.vercel.app/", "http://localhost:5173"], 
+app.use(cors({ origin: ["https://chatterbox-app.vercel.app", "http://localhost:5173"], 
 methods:["get","post"],
 credentials: true }));
 app.use(express.json());
