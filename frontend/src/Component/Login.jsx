@@ -17,7 +17,7 @@ function Login() {
     e.preventDefault();
     try {
       const response = await axios.post(
-        "http://localhost:3000/api/auth/login",
+        "chatterbox-production.up.railway.app/api/auth/login" || "http://localhost:3000/api/auth/login",
         input
       );
       // console.log(response);
