@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { BsFillSendFill } from "react-icons/bs";
 import { IoMdArrowRoundBack } from "react-icons/io";
-import { TbLogout } from "react-icons/tb"; // This assumes TbLogout is provided by react-icons/tb library
+import { TbLogout } from "react-icons/tb"; 
 import { useNavigate } from "react-router-dom";
 import "../App.css";
 import useFetchContacts from "../hooks/useFetchContacts.js";
@@ -14,8 +14,8 @@ import useLogout from "../hooks/useLogout.js";
 import useSocket from "../hooks/useSocket.js";
 import chat from "../assets/chat.png";
 import hello from "../assets/hiii.png";
-import online from "../assets/online.png";
-import offline from "../assets/offline.png";
+// import online from "../assets/online.png";
+// import offline from "../assets/offline.png";
 import twitty from "../assets/twitty.png";
 import moment from "moment";
 

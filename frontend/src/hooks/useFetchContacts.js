@@ -8,7 +8,8 @@ const useFetchContacts = () => {
   useEffect(() => {
     const fetchContacts = async () => {
       try {
-        const response = await axios.get("chatterbox-production.up.railway.app/api/users" || "http://localhost:3000/api/users");
+        const response = await axios.get("https://chatterbox-production.up.railway.app/api/users");
+        // const response = await axios.get("http://localhost:3000/api/users");
         if (!response || response.status !== 200) {
           throw new Error("Error fetching users");
         }

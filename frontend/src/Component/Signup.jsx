@@ -24,7 +24,8 @@ function Signup() {
     }
     try {
       const response = await axios.post(
-        "chatterbox-production.up.railway.app/api/auth/signup" || "http://localhost:3000/api/auth/signup",
+        "https://chatterbox-production.up.railway.app/api/auth/signup",
+        // "http://localhost:3000/api/auth/signup",
         input
       );
       if (response && response.status === 201) {
