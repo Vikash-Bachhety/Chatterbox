@@ -12,8 +12,7 @@ dotenv.config();
 const PORT = process.env.PORT || 3000;
 
 app.use(cors({ 
-  // origin: "https://chatterbox-app.vercel.app",
-  origin: "*",
+  origin: ["https://chatterbox-app.vercel.app", "http://localhost:5173"],
   credentials: true 
 }));
 
@@ -27,10 +26,10 @@ app.use("/api/message", messageRoutes);
 app.use("/api/users", userRoutes);
 
 // Error handling middleware
-// app.use((err, req, res, next) => {
-//   console.error(err.stack);
-//   res.status(500).send("Something broke!");
-// });
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).send("Something broke!");
+});
 
 server.listen(PORT, () => {
   connection();
