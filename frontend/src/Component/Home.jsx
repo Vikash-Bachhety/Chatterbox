@@ -72,7 +72,9 @@ function Home() {
     if (socket) {
       socket.on("connect", () => {
         console.log("Connected to server");
-        socket.emit('get previous messages'); // Emit event to request previous messages when connected
+        const userId = userId;
+        const partnerId = selectedUserId;
+        socket.emit('get previous messages', {userId, partnerId}); // Emit event to request previous messages when connected
       });
 
       socket.on("disconnect", () => {
