@@ -221,13 +221,12 @@ function Home() {
               {Array.isArray(conversation) && conversation.length > 0 ? (
                 <ul className="flex flex-col gap-y-10 max-auto max-h-1/2 m-5 lg:ml-20">
                   {conversation.map((chat) => (
-                    <li key={chat.id}>
+                      <li
+                      key={chat.id}>
                       {chat.message && (
-                        <p
-                          className={`relative text-black text-center min-w-24 md:max-w-md inline-block font-medium p-2 border rounded-lg break-words w-auto ${
-                            chat.senderId === userId ? "bg-teal-100 self-start" : "bg-cyan-100 self-end"
-                          }`}
-                        >
+                        <p 
+                        className={`relative text-black text-center min-w-24 sm:max-w-48 md:max-w-md inline-block  font-medium p-2 border rounded-lg break-words w-auto ${
+                          chat.reciever !== userId ? "bg-teal-100 self-start" : "bg-cyan-100 self-end"}`}>
                           {chat.message}
                           <span className="absolute text-[10px] text-gray-500 font-semibold right-0 -bottom-6">
                             {chat.createdAt &&
