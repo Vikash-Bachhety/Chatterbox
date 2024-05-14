@@ -68,11 +68,11 @@ function Home() {
 
   const status = useOnlineStatus();
 
-  // Add event listeners for socket events
   useEffect(() => {
     if (socket) {
       socket.on("connect", () => {
         console.log("Connected to server");
+        socket.emit('get previous messages'); // Emit event to request previous messages when connected
       });
 
       socket.on("disconnect", () => {
@@ -85,11 +85,18 @@ function Home() {
         setConversation((prevConversation) => [...prevConversation, message]);
       });
 
+      // Handle previous messages received from the server
+      socket.on('previous messages', (messages) => {
+        // Display previous messages in the chat interface
+        setConversation(messages);
+      });
+
       // Clean up function to remove event listeners when component unmounts
       return () => {
         socket.off("connect");
         socket.off("disconnect");
         socket.off("chat message");
+        socket.off("previous messages");
       };
     }
   }, [socket]);
