@@ -16,14 +16,6 @@ const io = new Server(server, {
 });
 
 io.on('connection', async (socket) => {
-  // Fetch previous messages from the database
-  try {
-    const previousMessages = await Message.find({ /* Add your query to filter messages */ }).populate('sender');
-    socket.emit('previous messages', previousMessages);
-  } catch (error) {
-    console.error('Error retrieving previous messages:', error);
-  }
-
   // Event listener for when a user sends a message
   socket.on('chat message', async (data) => {
     try {
@@ -53,6 +45,30 @@ io.on('connection', async (socket) => {
       io.emit('chat message', newMessage);
     } catch (error) {
       console.error('Error handling message:', error);
+    }
+  });
+
+  // Event listener for when a user requests previous messages
+  socket.on('get previous messages', async ({ userId, partnerId }) => {
+    try {
+      // Find conversation where both userId and partnerId are participants
+      const conversation = await Conversation.findOne({
+        participants: { $all: [userId, partnerId] },
+      }).populate("messages");
+
+      if (conversation) {
+        // If conversation is found, send back the messages
+        const messages = conversation.messages;
+        socket.emit('previous messages', messages);
+      } else {
+        // If conversation is not found, send appropriate message
+        socket.emit('previous messages', []);
+      }
+    } catch (error) {
+      // Handle any errors that occur during the process
+      console.error("Error in receive message controller:", error);
+      // You can emit an error event to the client if needed
+      socket.emit('error', 'Failed to fetch previous messages');
     }
   });
 
