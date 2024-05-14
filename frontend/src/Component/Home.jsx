@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { BsFillSendFill } from "react-icons/bs";
 import { IoMdArrowRoundBack } from "react-icons/io";
-import { TbLogout } from "react-icons/tb"; 
+import { TbLogout } from "react-icons/tb";
 import { useNavigate } from "react-router-dom";
 import "../App.css";
 import useFetchContacts from "../hooks/useFetchContacts.js";
@@ -49,12 +49,12 @@ function Home() {
   // };
 
   const handleSendMessage = () => {
-    if (message.trim() !== '') {
-      socket.emit('chat message', {
+    if (message.trim() !== "") {
+      socket.emit("chat message", {
         recipientId: selectedUserId,
         message: message,
       });
-      setMessage(''); // Clear the message input
+      setMessage(""); // Clear the message input
     }
   };
 
@@ -97,7 +97,15 @@ function Home() {
   return (
     <div className="flex h-screen bg-gray-50 dark:bg-gray-900">
       {/* Sidebar */}
-      <aside className="flex flex-col w-1/4 bg-gray-800 text-white">
+      <aside
+        className={
+          window.innerWidth <= 640
+            ? `flex flex-col min-w-60 w-full sm:w-1/4 bg-gray-800 text-white ${
+                selectedUserId ? "hidden" : ""
+              }`
+            : `flex flex-col min-w-60 w-full sm:w-1/4 bg-gray-800 text-white`
+        }
+      >
         <header className="flex items-center justify-center bg-slate-950 p-3">
           {/* <h1 className="hidden md:block text-white font-serif font-extrabold text-xl rounded-lg px-4 py-2 text-center w-11/12">
             Welcome to Chatterbox`
@@ -127,17 +135,18 @@ function Home() {
           <ul className="divide-y divide-gray-800">
             {/* {console.log(userId)} */}
             {contacts
-              .filter((contact) => userId.userId !== contact._id 
-              // (console.log(contact._id))
-            )
-             
+              .filter(
+                (contact) => userId.userId !== contact._id
+                // (console.log(contact._id))
+              )
+
               // .filter((user) => {
-                //   return search.toLowerCase() === ""
-                //     ? user
-                //     : user.fullName.toLowerCase().includes(search);
-                // })
-                .map((contact) => (
-                  <li
+              //   return search.toLowerCase() === ""
+              //     ? user
+              //     : user.fullName.toLowerCase().includes(search);
+              // })
+              .map((contact) => (
+                <li
                   key={contact._id}
                   onClick={() =>
                     handleContactClick(
@@ -146,21 +155,22 @@ function Home() {
                       contact.profilePic
                     )
                   }
+                  id="Sidebar"
                   className="p-4 cursor-pointer hover:bg-blue-200 hover:bg-opacity-10 hover:rounded-sm transition-colors duration-200"
-                  >
+                >
                   <div className="flex items-center gap-4">
                     <div className="flex-shrink-0 justify-center">
                       <img
-                        className="hidden md:block h-10 w-10 rounded-full"
+                        className="h-16 w-16 sm:h-10 sm:w-10 rounded-full"
                         src={contact.profilePic}
                         alt={contact.fullName}
                       />
                     </div>
                     <div className="relative ml-3 w-full">
-                      <p className="md:text-lg font-medium tracking-wider text-gray-200">
+                      <p className="text-2xl sm:text-lg font-medium tracking-wider text-gray-200">
                         {contact.fullName}
                       </p>
-                      <p className="hidden lg:block absolute top-0 right-1 text-[8px] xl:text-[10px] font-medium tracking-wider text-gray-400">
+                      <p className="sm:hidden xl:block absolute top-0 right-1 text-sm xl:text-[16px] font-medium tracking-wider text-gray-400">
                         {moment(contact.updatedAt).format("DD-MM-YY")}
                       </p>
                     </div>
@@ -172,13 +182,21 @@ function Home() {
         <footer className="bg-slate-950 p-3 flex lg:justify-between justify-center">
           <img className="hidden lg:block h-10 w-10" src={twitty} alt="" />
           <TbLogout
-            className="cursor-pointer h-8 w-8 hover:scale-110"
+            className="cursor-pointer h-8 w-8 mb-2 hover:scale-110"
             onClick={handleLogout}
           />
         </footer>
       </aside>
       {/* Main Content */}
-      <div className="flex-1 bg-slate-950 w-full h-full bg-cover bg-center flex flex-col">
+      <div
+        className={
+          window.innerWidth <= 640
+            ? `flex-1 bg-slate-950 w-full h-full bg-cover bg-center sm:flex flex-col ${
+                selectedUserId ? "" : "hidden"
+              }`
+            : `flex-1 bg-slate-950 w-full h-full bg-cover bg-center sm:flex flex-col`
+        }
+      >
         {selectedUserId ? (
           <>
             <div className="p-3 h-16 bg-slate-900 flex items-center gap-4">
@@ -201,11 +219,15 @@ function Home() {
               className="text-white w-full h-4/5 overflow-auto my-6"
             >
               {Array.isArray(conversation) && conversation.length > 0 ? (
-                <ul className="flex flex-col gap-y-10 max-auto max-h-1/2 m-5 ml-20">
+                <ul className="flex flex-col gap-y-10 max-auto max-h-1/2 m-5 lg:ml-20">
                   {conversation.map((chat) => (
                     <li key={chat.id}>
                       {chat.message && (
-                        <p className="relative text-black text-center min-w-24 max-w-md inline-block bg-teal-100 font-medium p-2 border rounded-lg break-words w-auto">
+                        <p
+                          className={`relative text-black text-center min-w-24 md:max-w-md inline-block font-medium p-2 border rounded-lg break-words w-auto ${
+                            chat.senderId === userId ? "bg-teal-100 self-start" : "bg-cyan-100 self-end"
+                          }`}
+                        >
                           {chat.message}
                           <span className="absolute text-[10px] text-gray-500 font-semibold right-0 -bottom-6">
                             {chat.createdAt &&
@@ -219,10 +241,10 @@ function Home() {
               ) : (
                 <div className="h-3/4 bg-bg flex flex-col items-center mt-32">
                   <img className="h-28 w-28" src={hello} alt="" />
-                  <h1 className="font-extrabold text-2xl text-gray-700 hover:text-gray-600 font-sans">
+                  <h1 className="flex flex-wrap sm:font-extrabold text-lg lg:text-2xl text-gray-700 hover:text-gray-600 font-sans">
                     Start a Conversation with {recipient.fullname.toUpperCase()}
                   </h1>
-                  <p className="text-lg text-gray-600 mt-4">
+                  <p className="text-sm md:text-xl lg:text-2xl text-gray-600 mt-4">
                     Send your first message and get the conversation going.
                   </p>
                 </div>
@@ -255,10 +277,10 @@ function Home() {
               src={chat}
               alt=""
             />
-            <h1 className="font-extrabold text-4xl text-gray-700 hover:text-gray-600 font-sans">
+            <h1 className="font-extrabold text-2xl md:text-4xl text-gray-700 hover:text-gray-600 font-sans">
               Let's start Conversation
             </h1>
-            <p className="text-xl text-gray-600 mt-4">
+            <p className="text-lg md:text-xl text-gray-600 mt-4">
               Select a contact to start chatting.
             </p>
           </div>
