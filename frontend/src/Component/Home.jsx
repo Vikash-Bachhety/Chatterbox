@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import "../App.css";
 import useFetchContacts from "../hooks/useFetchContacts.js";
 import useSendMessage from "../hooks/useSendMessage.js";
-import useFetchConversation from "../hooks/useFetchConversation";
+// import useFetchConversation from "../hooks/useFetchConversation";
 import useScrollToBottom from "../hooks/useScrollToBottom.js";
 import useSetUserIdFromToken from "../hooks/useSetUserIdFromToken.js";
 import useOnlineStatus from "../hooks/useOnlineStatus.js";
@@ -21,12 +21,13 @@ import moment from "moment";
 
 function Home() {
   const [selectedUserId, setSelectedUserId] = useState(null);
+    const [conversation, setConversation] = useState([]);
   // const [conversation, setConversation] = useState([]);
   const [recipient, setRecipient] = useState({ fullname: "", profilepic: "" });
   const { message, setMessage, sendMessage } = useSendMessage();
   const { contacts, search, setSearch } = useFetchContacts();
-  const { conversation, setConversation, fetchConversation } =
-    useFetchConversation();
+  // const { conversation, setConversation, fetchConversation } =
+  //   useFetchConversation();
   const chatContainerRef = useScrollToBottom(conversation);
   const userId = useSetUserIdFromToken();
   const navigate = useNavigate();
@@ -40,7 +41,7 @@ function Home() {
   const handleContactClick = (userId, fullname, profilepic) => {
     setSelectedUserId(userId);
     setRecipient({ fullname, profilepic });
-    fetchConversation(userId);
+    // fetchConversation(userId);
     setConversation([]);
   };
 
@@ -54,7 +55,8 @@ function Home() {
         recipientId: selectedUserId,
         message: message,
       });
-      setMessage(""); // Clear the message input
+      setMessage(""); 
+      console.log(recipientId, message);// Clear the message input
     }
   };
 

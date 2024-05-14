@@ -18,6 +18,7 @@ const io = new Server(server, {
 io.on('connection', async (socket) => {
   // Event listener for when a user sends a message
   socket.on('chat message', async (data) => {
+    console.log(data);
     try {
       // Store the message in the database
       const newMessage = await Message.create({
@@ -49,11 +50,11 @@ io.on('connection', async (socket) => {
   });
 
   // Event listener for when a user requests previous messages
-  socket.on('get previous messages', async ({ userId, partnerId }) => {
+  socket.on('get previous messages', async () => {
     try {
       // Find conversation where both userId and partnerId are participants
       const conversation = await Conversation.findOne({
-        participants: { $all: [userId, partnerId] },
+        participants: { $all: [socket.id, data.recipientId] },
       }).populate("messages");
 
       if (conversation) {
