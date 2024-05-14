@@ -44,8 +44,18 @@ function Home() {
     setConversation([]);
   };
 
+  // const handleSendMessage = () => {
+  //   sendMessage(selectedUserId, conversation, setConversation);
+  // };
+
   const handleSendMessage = () => {
-    sendMessage(selectedUserId, conversation, setConversation);
+    if (message.trim() !== '') {
+      socket.emit('chat message', {
+        recipientId: selectedUserId,
+        message: message,
+      });
+      setMessage(''); // Clear the message input
+    }
   };
 
   const backClick = () => {
@@ -69,16 +79,17 @@ function Home() {
         console.log("Disconnected from server");
       });
 
-      socket.on("message", (message) => {
+      socket.on("chat message", (message) => {
         console.log("Received message:", message);
-        // Handle received message
+        // Add the received message to the conversation state
+        setConversation((prevConversation) => [...prevConversation, message]);
       });
 
       // Clean up function to remove event listeners when component unmounts
       return () => {
         socket.off("connect");
         socket.off("disconnect");
-        socket.off("message");
+        socket.off("chat message");
       };
     }
   }, [socket]);
@@ -114,15 +125,19 @@ function Home() {
         </header>
         <main id="aside" className="flex-1 bg-gray-950 overflow-y-auto p-2">
           <ul className="divide-y divide-gray-800">
+            {/* {console.log(userId)} */}
             {contacts
-              .filter((user) => {
-                return search.toLowerCase() === ""
-                  ? user
-                  : user.fullName.toLowerCase().includes(search);
-              })
-              .filter((contact) => userId !== contact._id)
-              .map((contact) => (
-                <li
+              .filter((contact) => userId.userId !== contact._id 
+              // (console.log(contact._id))
+            )
+             
+              // .filter((user) => {
+                //   return search.toLowerCase() === ""
+                //     ? user
+                //     : user.fullName.toLowerCase().includes(search);
+                // })
+                .map((contact) => (
+                  <li
                   key={contact._id}
                   onClick={() =>
                     handleContactClick(
@@ -132,7 +147,7 @@ function Home() {
                     )
                   }
                   className="p-4 cursor-pointer hover:bg-blue-200 hover:bg-opacity-10 hover:rounded-sm transition-colors duration-200"
-                >
+                  >
                   <div className="flex items-center gap-4">
                     <div className="flex-shrink-0 justify-center">
                       <img
